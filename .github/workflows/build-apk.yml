@@ -1,48 +1,42 @@
-name: Build APK per Android
+name: Crea APK per Android
 
 on:
-push:
-branches:
-- principale
-workflow_dispatch:
+  push:
+    branches:
+      - principale
+  workflow_dispatch:
 
 jobs:
-build:
-runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
 
-  - name: Configura Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+      - name: Configura Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-  - name: Configura Gradle
-    uses: gradle/actions/setup-gradle@v4
+      - name: Configura Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-  - name: Estrai progetto
-    run: |
-      unzip -o "FIRE-DOOR-MANAGER-APK (1).zip" -d progetto
-      find progetto -maxdepth 3 -type f | head -100
+      - name: Verifica progetto
+        run: |
+          ls -la
+          ls -la fdm_android
+          ls -la fdm_android/app
 
-  - name: Verifica progetto Android
-    run: |
-      find progetto -name gradlew -type f
-      find progetto -name settings.gradle -o -name settings.gradle.kts
+      - name: Compila APK
+        run: gradle -p fdm_android assembleDebug
 
-  - name: Crea APK
-    run: |
-      cd progetto
-      chmod +x fdm/android/gradlew
-      cd fdm/android
-      ./gradlew assembleDebug
-
-  - name: Carica APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: FIRE-DOOR-MANAGER-APK
-      path: progetto/fdm/android/app/build/outputs/apk/debug/*.apk
-      if-no-files-found: error
+      - name: Salva APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FIRE-DOOR-MANAGER-APK
+          path: fdm_android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
