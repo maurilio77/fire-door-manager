@@ -28,7 +28,13 @@ jobs:
       - name: Extract project
         run: |
           unzip -o "FIRE-DOOR-MANAGER-APK (1).zip" -d extracted
-
+          
+      - name: Show extracted files
+        run: |
+          echo "CONTENUTO DEL REPOSITORY"
+          ls -la
+          echo "CONTENUTO DELLO ZIP"
+          find extracted -maxdepth 5 -print
       - name: Find Android project
         run: |
           PROJECT_DIR=$(find extracted -type f -name settings.gradle -printf '%h\n' | head -1)
