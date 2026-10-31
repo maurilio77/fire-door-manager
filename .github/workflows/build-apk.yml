@@ -1,10 +1,10 @@
 name: Crea APK per Android
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - principale
-  workflow_dispatch:
 
 jobs:
   build:
@@ -25,18 +25,25 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Verifica progetto
+      - name: Estrai progetto
         run: |
-          ls -la
-          ls -la fdm_android
-          ls -la fdm_android/app
+          unzip -o "FIRE-DOOR-MANAGER-APK (1).zip" -d estratto
+          find estratto -name settings.gradle -type f
+          find estratto -name MainActivity.java -type f
 
       - name: Compila APK
-        run: gradle -p fdm_android assembleDebug
+        run: |
+          gradle -p "estratto/fire_door_manager_v5_android_build_da_telefono-1/fdm_android" assembleDebug
 
       - name: Salva APK
         uses: actions/upload-artifact@v4
         with:
           name: FIRE-DOOR-MANAGER-APK
-          path: fdm_android/app/build/outputs/apk/debug/*.apk
+          path: estratto/fire_door_manager_v5_android_build_da_telefono-1/fdm_android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+Dopo aver incollato, premi **Commit changes**.
+
+Poi avvia nuovamente la compilazione da Azioni.
+
+**Importante:** se il percorso effettivo nello ZIP è diverso da quello indicato, la compilazione si fermerà. In quel caso correggeremo il percorso sulla base del nuovo errore.
