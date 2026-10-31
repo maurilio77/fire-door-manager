@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - principale
+      - main
 
 jobs:
   build:
@@ -22,32 +22,33 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
 
       - name: Extract project
         run: |
+          mkdir -p extracted
           unzip -o "FIRE-DOOR-MANAGER-APK (1).zip" -d extracted
-          
+
       - name: Show extracted files
         run: |
-          echo "CONTENUTO DEL REPOSITORY"
-          ls -la
           echo "CONTENUTO DELLO ZIP"
-          find extracted -maxdepth 5 -print
+          find extracted -maxdepth 5 -type f
+
       - name: Find Android project
         run: |
           PROJECT_DIR=$(find extracted -type f -name settings.gradle -printf '%h\n' | head -1)
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERRORE: progetto Android non trovato"
+            exit 1
+          fi
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-          echo "Progetto trovato: $PROJECT_DIR"
-          ls -la "$PROJECT_DIR"
 
       - name: Build APK
-        run: gradle -p "$PROJECT_DIR" assembleDebug
+        run: |
+          cd "$PROJECT_DIR"
+          gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FIRE-DOOR-MANAGER-APK
           path: extracted/**/app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
