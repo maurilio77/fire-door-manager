@@ -26,8 +26,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Extract project
-        run: unzip -o fire_door_manager_v5_android_build_da_telefono.zip
-
+        run: unzip -o "FIRE-DOOR-MANAGER-APK (1).zip"
       - name: Build APK
         run: gradle -p fdm_android assembleDebug
 
