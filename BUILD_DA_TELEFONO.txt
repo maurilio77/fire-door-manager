@@ -1,0 +1,23 @@
+FIRE DOOR MANAGER V5 - PROGETTO ANDROID PER BUILD DA SMARTPHONE
+
+IMPORTANTE: questo ZIP contiene il PROGETTO ANDROID completo, non un APK singolo.
+L'icona ufficiale FDM e' gia' inclusa nelle risorse Android.
+
+CARICAMENTO SU GITHUB DAL TELEFONO
+1. Apri il repository GitHub maurilio77/fire-door-manager.
+2. Vai su Code e carica TUTTI i file e le cartelle contenuti in questo ZIP, mantenendo la struttura.
+   Non caricare questo ZIP come singolo file.
+3. I file principali devono comparire direttamente nella radice del repository:
+   settings.gradle, build.gradle, gradle.properties e cartella app.
+   Deve esserci anche .github/workflows/build-apk.yml.
+4. Se GitHub chiede dove salvare, usa il branch main.
+5. Apri Actions e seleziona Build Fire Door Manager APK.
+6. Premi Run workflow e attendi che il lavoro termini con successo.
+7. Apri l'esecuzione completata e scarica l'artifact FIRE-DOOR-MANAGER-APK.
+   L'APK si trova dentro lo ZIP dell'artifact e si chiama app-debug.apk.
+
+NOTA SUI DATI
+La V5 inclusa funziona offline e conserva i dati localmente sul dispositivo.
+Usa la funzione di backup JSON per esportare/importare i dati.
+La sincronizzazione automatica tra telefoni e account multipli non e' implementata in questa build.
+Questa e' una build debug per collaudo, non una release firmata per Play Store.
