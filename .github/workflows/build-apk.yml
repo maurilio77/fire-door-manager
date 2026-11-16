@@ -1,49 +1,49 @@
-name: Build Android APK
+name: Build Fire Door Manager V6 APK
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+      - master
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Extract Android project
+      - name: Extract V6 project
         run: |
-          mkdir -p extracted
-          ZIP_FILE=$(find . -maxdepth 1 -iname '*ANDROID*COMPLETO*.zip' | head -n 1)
+          ZIP_FILE=$(find . -maxdepth 1 -type f -iname '*V6*COMPLETO*.zip' | head -n 1)
           if [ -z "$ZIP_FILE" ]; then
-            echo "Archivio Android completo non trovato"
+            echo "ERRORE: ZIP V6 non trovato"
             exit 1
           fi
-          unzip "$ZIP_FILE" -d extracted
-
-      - name: Find Android project
-        run: |
-          PROJECT_DIR=$(find extracted -name settings.gradle -type f -printf '%h\n' | head -n 1)
-          if [ -z "$PROJECT_DIR" ]; then
+          mkdir extracted
+          unzip -q "$ZIP_FILE" -d extracted
+          PROJECT_DIR=$(find extracted -name settings.gradle -print -quit | xargs dirname)
+          if [ -z "$PROJECT_DIR" ] || [ ! -f "$PROJECT_DIR/app/build.gradle" ]; then
             echo "ERRORE: progetto Android non trovato"
-            find extracted -maxdepth 5 -type f
             exit 1
           fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
 
       - name: Build APK
         run: |
@@ -53,5 +53,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FIRE-DOOR-MANAGER-APK
-          path: extracted/**/build/outputs/apk/debug/*.apk
+          name: FIRE-DOOR-MANAGER-V6-APK
+          path: extracted/fdm_android_ready/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
