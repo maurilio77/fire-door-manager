@@ -1,4 +1,4 @@
-name: Build Fire Door Manager V6 APK
+name: Build Fire Door Manager V7 APK
 
 on:
   workflow_dispatch:
@@ -29,21 +29,23 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Extract V6 project
+      - name: Extract V7 project
         run: |
-          ZIP_FILE=$(find . -maxdepth 1 -type f -iname '*V6*COMPLETO*.zip' | head -n 1)
+          ZIP_FILE=$(find . -maxdepth 1 -type f -iname '*V7*CLOUD*PROGETTO*.zip' | head -n 1)
           if [ -z "$ZIP_FILE" ]; then
-            echo "ERRORE: ZIP V6 non trovato"
+            echo "ERRORE: ZIP V7 non trovato"
+            ls -la
             exit 1
           fi
           mkdir extracted
           unzip -q "$ZIP_FILE" -d extracted
           PROJECT_DIR=$(find extracted -name settings.gradle -print -quit | xargs dirname)
           if [ -z "$PROJECT_DIR" ] || [ ! -f "$PROJECT_DIR/app/build.gradle" ]; then
-            echo "ERRORE: progetto Android non trovato"
+            echo "ERRORE: progetto Android V7 non trovato"
+            find extracted -maxdepth 4 -type f | head -100
             exit 1
           fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Build APK
         run: |
@@ -53,6 +55,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: FIRE-DOOR-MANAGER-V6-APK
-          path: extracted/fdm_android_ready/app/build/outputs/apk/debug/app-debug.apk
+          name: FIRE-DOOR-MANAGER-V7-APK
+          path: extracted/**/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
